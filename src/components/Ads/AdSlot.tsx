@@ -2,17 +2,18 @@
 
 import { useEffect, useRef } from "react";
 
+// Default snippet for 300x250 (Rectangle)
 const DEFAULT_AD_SNIPPET = `
 <script>
   atOptions = {
-    key: "add676d9dbf07c71ad8d42f5e1605d01",
+    key: "ca0213e25e5d550563dff75602f0a2c2",
     format: "iframe",
     height: 250,
     width: 300,
     params: {}
   };
 </script>
-<script src="https://www.highperformanceformat.com/add676d9dbf07c71ad8d42f5e1605d01/invoke.js"></script>`;
+<script src="https://www.highperformanceformat.com/ca0213e25e5d550563dff75602f0a2c2/invoke.js"></script>`;
 
 const LEADERBOARD_AD_SNIPPET = `
 <script>
@@ -26,9 +27,23 @@ const LEADERBOARD_AD_SNIPPET = `
 </script>
 <script src="https://www.highperformanceformat.com/28117ca9d867cac37050fb6256f58350/invoke.js"></script>`;
 
-const AD_SNIPPETS: Record<"rectangle" | "leaderboard", string> = {
+// Default snippet for 160x600 (Skyscraper)
+const SKYSCRAPER_AD_SNIPPET = `
+<script>
+  atOptions = {
+    key: "8064464a2d3860dfebf5eeabaabd4eb7",
+    format: "iframe",
+    height: 600,
+    width: 160,
+    params: {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/8064464a2d3860dfebf5eeabaabd4eb7/invoke.js"></script>`;
+
+const AD_SNIPPETS: Record<"rectangle" | "leaderboard" | "skyscraper", string> = {
   rectangle: DEFAULT_AD_SNIPPET,
   leaderboard: LEADERBOARD_AD_SNIPPET,
+  skyscraper: SKYSCRAPER_AD_SNIPPET,
 };
 
 type AdSlotProps = {
@@ -36,7 +51,7 @@ type AdSlotProps = {
   description?: string;
   adHtml?: string; // optional override per-slot
   minHeight?: number;
-  size?: "rectangle" | "leaderboard";
+  size?: "rectangle" | "leaderboard" | "skyscraper";
 };
 
 export default function AdSlot({
@@ -56,6 +71,8 @@ export default function AdSlot({
   const envBySize = (
     size === "leaderboard"
       ? process.env.NEXT_PUBLIC_ADS_SNIPPET_LEADERBOARD
+      : size === "skyscraper"
+      ? process.env.NEXT_PUBLIC_ADS_SNIPPET_SKYSCRAPER
       : process.env.NEXT_PUBLIC_ADS_SNIPPET_RECTANGLE
   )?.trim();
 
@@ -68,7 +85,7 @@ export default function AdSlot({
   const isPlaceholder = chosenSnippet?.includes("<your_ad_embed_html_or_script_here>");
   const adMarkup = !chosenSnippet || isPlaceholder ? AD_SNIPPETS[size] ?? DEFAULT_AD_SNIPPET : chosenSnippet;
 
-  const computedMinHeight = minHeight ?? (size === "leaderboard" ? 90 : 250);
+  const computedMinHeight = minHeight ?? (size === "leaderboard" ? 90 : size === "skyscraper" ? 600 : 250);
 
   useEffect(() => {
     const el = containerRef.current;

@@ -30,9 +30,8 @@ export default async function TestPage({
           <TestRunner subject={subject} />
           <AdSlot
             title="Sponsored"
-            description="Ads render here when you set NEXT_PUBLIC_ADS_SNIPPET."
-            minHeight={250}
-            size="rectangle"
+            description="160x600 skyscraper"
+            size="skyscraper"
           />
         </div>
       </main>
