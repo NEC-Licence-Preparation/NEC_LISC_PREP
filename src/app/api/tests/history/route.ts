@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { connectDB } from "@/lib/mongodb";
 import TestAttempt from "@/models/TestAttempt";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const token = (await getToken({
       req,

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Question from "@/models/Question";
 import {
@@ -10,7 +10,7 @@ import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const token = (await getToken({
       req,
@@ -70,8 +70,11 @@ export async function POST(req: Request) {
       {
         error: "Invalid JSON",
         details: {
-          detailed: parsedDetailed.error?.flatten?.(),
-          quiz: parsedQuiz.error?.flatten?.(),
+          grouped: parsedGrouped.success
+            ? undefined
+            : parsedGrouped.error.flatten(),
+          flat: parsedFlat.success ? undefined : parsedFlat.error.flatten(),
+          quiz: parsedQuiz.success ? undefined : parsedQuiz.error.flatten(),
         },
       },
       { status: 400 }

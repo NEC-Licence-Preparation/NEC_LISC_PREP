@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Question from "@/models/Question";
 import { QuestionSchema } from "@/lib/validation";
@@ -6,7 +7,7 @@ import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const subject = searchParams.get("subject");
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const token = (await getToken({
       req,
