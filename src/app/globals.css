@@ -12,11 +12,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Keep a single light palette across all modes to avoid OS-driven inversion */
+:root {
+  color-scheme: light;
 }
 
 body {
