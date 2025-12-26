@@ -27,7 +27,9 @@ export default function LoginForm() {
         return;
       }
 
+      // Refresh the page to update session and redirect
       router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError("Unable to sign in right now. Please try again.");
       setLoading(false);
