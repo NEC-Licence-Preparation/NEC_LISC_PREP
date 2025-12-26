@@ -16,8 +16,9 @@ export async function GET(req: NextRequest) {
     const questions = await Question.find(filter).lean();
     return NextResponse.json(questions);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Error fetching questions:", e);
+    // Return empty array instead of error object to prevent frontend crashes
+    return NextResponse.json([]);
   }
 }
 

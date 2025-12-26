@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(attempts);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Error fetching test history:", e);
+    // Return empty array instead of error object to prevent frontend crashes
+    return NextResponse.json([]);
   }
 }

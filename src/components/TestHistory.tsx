@@ -27,7 +27,9 @@ export default function TestHistory() {
     error: subjectsError,
   } = useSWR<string[]>("/api/subjects", subjectFetcher);
 
-  const attempts = data ?? [];
+  // Ensure data is always an array to prevent .map() errors
+  const attempts = Array.isArray(data) ? data : [];
+  const subjects = Array.isArray(subjectList) ? subjectList : [];
   const subjectsForChart = attempts.map((a) => a.subject || "General");
   const scores = attempts.map((a) => a.score);
 
@@ -79,10 +81,10 @@ export default function TestHistory() {
                 Failed to load subjects
               </span>
             )}
-            {!subjectsLoading && subjectList?.length === 0 && (
+            {!subjectsLoading && subjects.length === 0 && (
               <span className="text-xs text-slate-500">No subjects found.</span>
             )}
-            {subjectList?.map((s) => (
+            {subjects.map((s) => (
               <Link
                 key={s}
                 href={`/test?subject=${encodeURIComponent(s)}`}

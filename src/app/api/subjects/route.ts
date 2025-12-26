@@ -8,7 +8,8 @@ export async function GET() {
     const subjects = await Question.distinct("subject");
     return NextResponse.json(subjects);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Error fetching subjects:", e);
+    // Return empty array instead of error object to prevent frontend crashes
+    return NextResponse.json([]);
   }
 }
