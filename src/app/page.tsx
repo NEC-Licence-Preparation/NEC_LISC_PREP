@@ -6,26 +6,26 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       <NavBar />
-      <main className="max-w-5xl mx-auto p-8 grid gap-10">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 grid gap-8 lg:gap-10">
         <AdSlot
           title="Sponsored — Leaderboard"
           description="728x90 top banner."
           size="leaderboard"
         />
 
-        <section className="grid md:grid-cols-2 gap-6 items-center">
+        <section className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
           <div className="space-y-4">
             <p className="text-sm uppercase tracking-wide text-slate-500">
               NEC License Prep
             </p>
-            <h1 className="text-4xl font-semibold text-slate-900">
+            <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900">
               Practice, track, and master exam readiness.
             </h1>
-            <p className="text-slate-600 text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               Timed MCQs, detailed history, and admin-driven question uploads
               keep your prep aligned and current.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link
                 href="/register"
                 className="bg-slate-900 text-white px-5 py-3 rounded"

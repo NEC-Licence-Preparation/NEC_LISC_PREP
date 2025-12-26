@@ -1,8 +1,10 @@
 "use client";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -12,14 +14,24 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const res = await signIn("credentials", {
-      redirect: true,
-      callbackUrl: "/dashboard",
-      email,
-      password,
-    });
-    if (res?.error) setError("Invalid credentials");
-    setLoading(false);
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (res?.error) {
+        setError("Wrong email or password. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Unable to sign in right now. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (

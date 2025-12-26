@@ -40,11 +40,12 @@ const SKYSCRAPER_AD_SNIPPET = `
 </script>
 <script src="https://www.highperformanceformat.com/8064464a2d3860dfebf5eeabaabd4eb7/invoke.js"></script>`;
 
-const AD_SNIPPETS: Record<"rectangle" | "leaderboard" | "skyscraper", string> = {
-  rectangle: DEFAULT_AD_SNIPPET,
-  leaderboard: LEADERBOARD_AD_SNIPPET,
-  skyscraper: SKYSCRAPER_AD_SNIPPET,
-};
+const AD_SNIPPETS: Record<"rectangle" | "leaderboard" | "skyscraper", string> =
+  {
+    rectangle: DEFAULT_AD_SNIPPET,
+    leaderboard: LEADERBOARD_AD_SNIPPET,
+    skyscraper: SKYSCRAPER_AD_SNIPPET,
+  };
 
 type AdSlotProps = {
   title?: string;
@@ -76,16 +77,24 @@ export default function AdSlot({
       : process.env.NEXT_PUBLIC_ADS_SNIPPET_RECTANGLE
   )?.trim();
 
-  const chosenSnippet = (adHtml?.trim())
-    || envBySize
-    || envGeneric
-    || AD_SNIPPETS[size] 
-    || DEFAULT_AD_SNIPPET;
+  const chosenSnippet =
+    adHtml?.trim() ||
+    envBySize ||
+    envGeneric ||
+    AD_SNIPPETS[size] ||
+    DEFAULT_AD_SNIPPET;
 
-  const isPlaceholder = chosenSnippet?.includes("<your_ad_embed_html_or_script_here>");
-  const adMarkup = !chosenSnippet || isPlaceholder ? AD_SNIPPETS[size] ?? DEFAULT_AD_SNIPPET : chosenSnippet;
+  const isPlaceholder = chosenSnippet?.includes(
+    "<your_ad_embed_html_or_script_here>"
+  );
+  const adMarkup =
+    !chosenSnippet || isPlaceholder
+      ? AD_SNIPPETS[size] ?? DEFAULT_AD_SNIPPET
+      : chosenSnippet;
 
-  const computedMinHeight = minHeight ?? (size === "leaderboard" ? 90 : size === "skyscraper" ? 600 : 250);
+  const computedMinHeight =
+    minHeight ??
+    (size === "leaderboard" ? 90 : size === "skyscraper" ? 600 : 250);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -130,9 +139,9 @@ export default function AdSlot({
   }, [adMarkup]);
 
   return (
-    <section className="rounded-lg border border-dashed border-slate-300 bg-white shadow-sm p-4 space-y-3">
-      <div className="flex items-start justify-between gap-3">
-        <div>
+    <section className="rounded-lg border border-dashed border-slate-300 bg-white shadow-sm p-3 sm:p-4 space-y-3 w-full">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wide text-slate-500">
             {title}
           </p>
@@ -142,14 +151,14 @@ export default function AdSlot({
             </p>
           )}
         </div>
-        <span className="text-[10px] px-2 py-1 rounded-full bg-slate-100 text-slate-600">
+        <span className="text-[10px] px-2 py-1 rounded-full bg-slate-100 text-slate-600 whitespace-nowrap">
           Ad slot
         </span>
       </div>
 
       <div
         ref={containerRef}
-        className="w-full rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 text-sm"
+        className="w-full max-w-full overflow-hidden rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 text-xs sm:text-sm [&_iframe]:max-w-full [&_iframe]:h-auto"
         style={{ minHeight: `${computedMinHeight}px` }}
         aria-label="Advertisement"
         suppressHydrationWarning
