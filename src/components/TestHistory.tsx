@@ -10,11 +10,19 @@ type Attempt = {
   score: number;
 };
 
-const fetcher = (url: string) =>
-  fetch(url).then((r) => r.json() as Promise<Attempt[]>);
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch");
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
 
-const subjectFetcher = (url: string) =>
-  fetch(url).then((r) => r.json() as Promise<string[]>);
+const subjectFetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch");
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
 
 export default function TestHistory() {
   const { data, error, isLoading } = useSWR<Attempt[]>(

@@ -11,8 +11,12 @@ export type Question = {
   explanation?: string;
 };
 
-const fetcher = (url: string) =>
-  fetch(url).then((r) => r.json() as Promise<Question[]>);
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch");
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
 
 export default function useQuestions(subject?: string) {
   const { data, error, isLoading, mutate } = useSWR<Question[]>(
