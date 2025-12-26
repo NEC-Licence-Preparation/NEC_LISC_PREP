@@ -1,5 +1,6 @@
 "use client";
 import { useState, FormEvent } from "react";
+import { signIn } from "next-auth/react";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -66,6 +67,13 @@ export default function RegisterForm() {
         disabled={loading}
       >
         {loading ? "Registering..." : "Register"}
+      </button>
+      <button
+        type="button"
+        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+        className="w-full border py-2 rounded"
+      >
+        Continue with Google
       </button>
     </form>
   );

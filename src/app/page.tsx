@@ -1,18 +1,11 @@
 import Link from "next/link";
 import NavBar from "@/components/layout/NavBar";
-import AdSlot from "@/components/Ads/AdSlot";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       <NavBar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 grid gap-8 lg:gap-10">
-        <AdSlot
-          title="Sponsored — Leaderboard"
-          description="728x90 top banner."
-          size="leaderboard"
-        />
-
         <section className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
           <div className="space-y-4">
             <p className="text-sm uppercase tracking-wide text-slate-500">
@@ -68,20 +61,6 @@ export default function Home() {
               question sets instantly.
             </p>
           </div>
-        </section>
-
-        <section className="grid gap-6">
-          <AdSlot
-            title="Advertisement"
-            description="Paste your ad provider's embed code into NEXT_PUBLIC_ADS_SNIPPET to render it here without touching the layout."
-            minHeight={180}
-            size="rectangle"
-          />
-          <AdSlot
-            title="Sponsored — Leaderboard"
-            description="728x90 below the fold."
-            size="leaderboard"
-          />
         </section>
       </main>
     </div>
