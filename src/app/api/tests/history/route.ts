@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectDB();
-    
+
     // Get userId from token (stored for OAuth users) or use token.sub (for credential users)
     const userId = (token as any).userId || token.sub;
-    
+
     const attempts = await TestAttempt.find({ userId })
       .sort({ date: -1 })
       .lean();

@@ -42,7 +42,7 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           const existingUser = await User.findOne({ email: user.email });
-          
+
           if (!existingUser) {
             // Create new user for Google OAuth
             await User.create({
