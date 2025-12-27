@@ -21,7 +21,13 @@ const formatTime = (secs: number) => {
   return `${m}:${s}`;
 };
 
-export default function TestRunner({ subject }: { subject?: string }) {
+export default function TestRunner({
+  subject,
+  preselectedCount,
+}: {
+  subject?: string;
+  preselectedCount?: number;
+}) {
   const { questions, isLoading } = useQuestions(subject);
   const { answers, saveAnswer, setTimeTaken, timeTaken, reset } = useTest();
   const router = useRouter();
@@ -33,19 +39,26 @@ export default function TestRunner({ subject }: { subject?: string }) {
 
   const [submitted, setSubmitted] = useState(false);
   const [autoSubmitting, setAutoSubmitting] = useState(false);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(preselectedCount || 10);
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [started, setStarted] = useState(false);
   const [message, setMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [durationSeconds, setDurationSeconds] = useState(
-    getDurationForCount(10)
+    getDurationForCount(preselectedCount || 10)
   );
   const [remainingSeconds, setRemainingSeconds] = useState(
-    getDurationForCount(10)
+    getDurationForCount(preselectedCount || 10)
   );
   const subjectLabel = subject ?? "All Subjects";
+
+  // Auto-start if preselectedCount is provided
+  useEffect(() => {
+    if (preselectedCount && !started && !isLoading && questions.length > 0) {
+      startWithCount(preselectedCount);
+    }
+  }, [preselectedCount, started, isLoading, questions.length]);
 
   useEffect(() => {
     answersRef.current = answers;

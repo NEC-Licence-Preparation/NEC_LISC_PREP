@@ -1,13 +1,19 @@
 "use client";
 import useSWR from "swr";
 import ProgressChart from "./Charts/ProgressChart";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type Attempt = {
   _id: string;
   date: string;
   subject?: string;
   score: number;
+};
+
+type SubjectWithCount = {
+  subject: string;
+  count: number;
 };
 
 const fetcher = async (url: string) => {
@@ -26,6 +32,7 @@ const subjectFetcher = async (url: string) => {
 };
 
 export default function TestHistory() {
+  const router = useRouter();
   const { data, error, isLoading } = useSWR<Attempt[]>(
     "/api/tests/history",
     fetcher
@@ -34,13 +41,27 @@ export default function TestHistory() {
     data: subjectList,
     isLoading: subjectsLoading,
     error: subjectsError,
-  } = useSWR<string[]>("/api/subjects", subjectFetcher);
+  } = useSWR<SubjectWithCount[]>("/api/subjects", subjectFetcher);
+
+  // Helper function to shorten subject names
+  const shortenSubject = (subject: string) => {
+    const words = subject.split(" ");
+    if (words.length === 1) return subject.substring(0, 3).toUpperCase();
+    return words
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase();
+  };
 
   // Ensure data is always an array to prevent .map() errors
   const attempts = Array.isArray(data) ? data : [];
+  const recentAttempts = attempts.slice(0, 5);
   const subjects = Array.isArray(subjectList) ? subjectList : [];
-  const subjectsForChart = attempts.map((a) => a.subject || "General");
-  const scores = attempts.map((a) => a.score);
+  const fullSubjectsForChart = recentAttempts.map(
+    (a) => a.subject || "General"
+  );
+  const shortSubjectsForChart = fullSubjectsForChart.map(shortenSubject);
+  const scores = recentAttempts.map((a) => a.score);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -53,9 +74,9 @@ export default function TestHistory() {
         {!isLoading && !error && !attempts.length && (
           <p className="text-sm text-[#A6B1E1]">No attempts yet.</p>
         )}
-        {!!attempts.length && (
+        {!!recentAttempts.length && (
           <ul className="space-y-2 text-sm">
-            {attempts.map((a) => (
+            {recentAttempts.map((a) => (
               <li
                 key={a._id}
                 className="flex items-center justify-between border-b border-[#DCD6F7] pb-1"
@@ -74,32 +95,99 @@ export default function TestHistory() {
       </div>
       <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow">
         <p className="font-semibold mb-2 text-[#424874]">Scores by Subject</p>
-        <ProgressChart subjects={subjectsForChart} scores={scores} />
-        <div className="mt-3 space-y-2">
-          <p className="text-sm text-[#A6B1E1]">Subject-wise mock tests</p>
-          <div className="flex flex-wrap gap-2">
-            {subjectsLoading && (
-              <span className="text-xs text-[#A6B1E1]">Loading...</span>
-            )}
-            {subjectsError && (
-              <span className="text-xs text-red-600">
-                Failed to load subjects
-              </span>
-            )}
-            {!subjectsLoading && subjects.length === 0 && (
-              <span className="text-xs text-[#A6B1E1]">No subjects found.</span>
-            )}
-            {subjects.map((s) => (
-              <Link
-                key={s}
-                href={`/test?subject=${encodeURIComponent(s)}`}
-                className="text-xs border border-[#A6B1E1] text-[#424874] px-2 py-1 rounded hover:bg-[#DCD6F7] transition"
-              >
-                {s}
-              </Link>
-            ))}
-          </div>
+        <ProgressChart
+          subjects={shortSubjectsForChart}
+          fullSubjects={fullSubjectsForChart}
+          scores={scores}
+        />
+        <div className="mt-4 space-y-3">
+          <p className="text-sm font-semibold text-[#424874]">
+            Subject-wise mock tests
+          </p>
+          {subjectsLoading && (
+            <p className="text-xs text-[#A6B1E1]">Loading subjects...</p>
+          )}
+          {subjectsError && (
+            <p className="text-xs text-red-600">Failed to load subjects</p>
+          )}
+          {!subjectsLoading && subjects.length === 0 && (
+            <p className="text-xs text-[#A6B1E1]">No subjects found.</p>
+          )}
+          {!subjectsLoading && subjects.length > 0 && (
+            <div className="space-y-2">
+              {subjects.map((s) => (
+                <SubjectTestRow
+                  key={s.subject}
+                  subject={s.subject}
+                  totalQuestions={s.count}
+                  onStart={(count) =>
+                    router.push(
+                      `/test?subject=${encodeURIComponent(
+                        s.subject
+                      )}&count=${count}`
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SubjectTestRow({
+  subject,
+  totalQuestions,
+  onStart,
+}: {
+  subject: string;
+  totalQuestions: number;
+  onStart: (count: number) => void;
+}) {
+  const [selectedCount, setSelectedCount] = useState<number>(10);
+
+  // Generate available options based on total questions
+  const getAvailableOptions = () => {
+    const options = [10, 20, 50, 100];
+    return options.filter((opt) => opt <= totalQuestions);
+  };
+
+  const availableOptions = getAvailableOptions();
+
+  return (
+    <div className="flex items-center justify-between p-3 border border-[#DCD6F7] rounded-lg hover:bg-[#F4EEFF] transition">
+      <div className="flex-1">
+        <p className="font-medium text-[#424874] text-sm">{subject}</p>
+        <p className="text-xs text-[#A6B1E1]">
+          {totalQuestions} question{totalQuestions !== 1 ? "s" : ""} available
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <select
+          value={selectedCount}
+          onChange={(e) => setSelectedCount(Number(e.target.value))}
+          className="text-xs border border-[#A6B1E1] text-[#424874] px-2 py-1 rounded focus:outline-none focus:border-[#424874]"
+          disabled={availableOptions.length === 0}
+        >
+          {availableOptions.length === 0 ? (
+            <option value={0}>Not enough</option>
+          ) : (
+            availableOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt} questions
+              </option>
+            ))
+          )}
+        </select>
+        <button
+          onClick={() => onStart(selectedCount)}
+          disabled={availableOptions.length === 0}
+          className="bg-[#424874] text-white px-3 py-1 rounded text-xs hover:bg-[#424874]/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Start
+        </button>
       </div>
     </div>
   );

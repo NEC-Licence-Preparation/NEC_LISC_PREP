@@ -9,8 +9,8 @@ export default async function TestPage({
   searchParams,
 }: {
   searchParams:
-    | Promise<{ subject?: string; mode?: string }>
-    | { subject?: string; mode?: string };
+    | Promise<{ subject?: string; mode?: string; count?: string }>
+    | { subject?: string; mode?: string; count?: string };
 }) {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/login");
@@ -18,6 +18,9 @@ export default async function TestPage({
   const resolvedParams = await searchParams;
   const subject = resolvedParams?.subject;
   const mode = resolvedParams?.mode || "practice"; // 'practice' | 'daily10' | 'daily100'
+  const count = resolvedParams?.count
+    ? parseInt(resolvedParams.count)
+    : undefined;
 
   return (
     <div className="min-h-screen bg-[#F4EEFF]">
@@ -40,7 +43,9 @@ export default async function TestPage({
         )}
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)] gap-4 lg:gap-6 items-start">
-          {mode === "practice" && <TestRunner subject={subject} />}
+          {mode === "practice" && (
+            <TestRunner subject={subject} preselectedCount={count} />
+          )}
           {mode === "daily10" && <DailyTestRunner setSize="10" />}
           {mode === "daily100" && <DailyTestRunner setSize="100" />}
         </div>

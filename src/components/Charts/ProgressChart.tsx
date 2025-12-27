@@ -21,24 +21,44 @@ ChartJS.register(
 
 interface Props {
   subjects: string[];
+  fullSubjects?: string[];
   scores: number[];
 }
 
-export default function ProgressChart({ subjects, scores }: Props) {
+export default function ProgressChart({
+  subjects,
+  fullSubjects,
+  scores,
+}: Props) {
   const data = {
     labels: subjects,
     datasets: [
       {
         label: "Scores",
         data: scores,
-        backgroundColor: "rgba(15, 23, 42, 0.8)",
+        backgroundColor: "rgba(66, 72, 116, 0.8)", // #424874
       },
     ],
   };
   return (
     <Bar
       data={data}
-      options={{ responsive: true, plugins: { legend: { display: false } } }}
+      options={{
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (context) => {
+                const index = context[0].dataIndex;
+                return fullSubjects && fullSubjects[index]
+                  ? fullSubjects[index]
+                  : subjects[index];
+              },
+            },
+          },
+        },
+      }}
     />
   );
 }

@@ -21,8 +21,24 @@ export async function GET(req: Request) {
     if (token.faculty) {
       filter.faculty = token.faculty;
     }
-    const subjects = await Question.distinct("subject", filter);
-    return NextResponse.json(subjects);
+
+    // Get all questions and group by subject
+    const questions = await Question.find(filter).select("subject");
+    const subjectCounts = questions.reduce<Record<string, number>>((acc, q) => {
+      const subject = q.subject || "General";
+      acc[subject] = (acc[subject] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Return array of objects with subject and count
+    const subjectsWithCounts = Object.entries(subjectCounts).map(
+      ([subject, count]) => ({
+        subject,
+        count,
+      })
+    );
+
+    return NextResponse.json(subjectsWithCounts);
   } catch (e) {
     console.error("Error fetching subjects:", e);
     // Return empty array instead of error object to prevent frontend crashes
