@@ -4,6 +4,7 @@ import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { connectDB } from "@/lib/mongodb";
 import TestAttempt, { type IAnswer } from "@/models/TestAttempt";
+import { Types } from "mongoose";
 import Question from "@/models/Question";
 
 export async function GET(
@@ -24,10 +25,14 @@ export async function GET(
 
     await connectDB();
 
-    const userId = (token as any).userId || token.sub;
+    const userIdStr = (token as any).userId || token.sub;
+    const userObjectId = Types.ObjectId.isValid(String(userIdStr))
+      ? new Types.ObjectId(String(userIdStr))
+      : undefined;
+
     const attempt = await TestAttempt.findOne({
       _id: attemptId,
-      userId,
+      userId: userObjectId ?? (userIdStr as any),
     }).lean();
     if (!attempt)
       return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -5,6 +5,7 @@ import type { JWT } from "next-auth/jwt";
 import { connectDB } from "@/lib/mongodb";
 import Question from "@/models/Question";
 import TestAttempt from "@/models/TestAttempt";
+import { Types } from "mongoose";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,10 +39,13 @@ export async function POST(req: NextRequest) {
     const score = graded.filter((g) => g.correct).length;
 
     // Get userId from token (stored for OAuth users) or use token.sub (for credential users)
-    const userId = (token as any).userId || token.sub;
+    const userIdStr = (token as any).userId || token.sub;
+    const userObjectId = Types.ObjectId.isValid(String(userIdStr))
+      ? new Types.ObjectId(String(userIdStr))
+      : undefined;
 
     const attempt = await TestAttempt.create({
-      userId,
+      userId: userObjectId ?? (userIdStr as any),
       answers: graded,
       score,
       timeTaken,
