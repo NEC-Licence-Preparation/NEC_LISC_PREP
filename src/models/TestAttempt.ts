@@ -17,7 +17,8 @@ export interface ITestAttempt {
 
 const AnswerSchema = new Schema<IAnswer>({
   questionId: { type: Schema.Types.ObjectId, ref: "Question", required: true },
-  selectedOption: { type: String, required: true },
+  // Allow unanswered questions to be submitted by making the selection optional
+  selectedOption: { type: String, required: false, default: "" },
   correct: { type: Boolean, required: true },
 });
 

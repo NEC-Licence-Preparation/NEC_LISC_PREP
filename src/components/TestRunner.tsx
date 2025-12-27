@@ -1,33 +1,63 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import QuestionCard from "./QuestionCard";
 import useQuestions, { Question } from "./hooks/useQuestions";
 import { useTest } from "@/context/TestContext";
 
+const getDurationForCount = (count: number) => {
+  if (count >= 100) return 90 * 60; // 90 minutes
+  if (count >= 20) return 18 * 60; // 18 minutes
+  return 9 * 60; // 9 minutes for 10 questions
+};
+
+const formatTime = (secs: number) => {
+  const m = Math.floor(secs / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = Math.floor(secs % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${m}:${s}`;
+};
+
 export default function TestRunner({ subject }: { subject?: string }) {
   const { questions, isLoading } = useQuestions(subject);
   const { answers, saveAnswer, setTimeTaken, timeTaken, reset } = useTest();
+  const router = useRouter();
+
+  const answersRef = useRef(answers);
+  const testQuestionsRef = useRef<Question[]>([]);
+  const submittedRef = useRef(false);
+  const autoSubmittingRef = useRef(false);
+
   const [submitted, setSubmitted] = useState(false);
-  const [result, setResult] = useState<{
-    score: number;
-    total: number;
-    breakdown: {
-      questionId: string;
-      question: string;
-      selected?: string;
-      correctAnswer: string;
-      explanation?: string;
-      correct: boolean;
-    }[];
-  } | null>(null);
+  const [autoSubmitting, setAutoSubmitting] = useState(false);
   const [quantity, setQuantity] = useState(10);
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [started, setStarted] = useState(false);
   const [message, setMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [durationSeconds, setDurationSeconds] = useState(
+    getDurationForCount(10)
+  );
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    getDurationForCount(10)
+  );
   const subjectLabel = subject ?? "All Subjects";
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
+
+  useEffect(() => {
+    testQuestionsRef.current = testQuestions;
+  }, [testQuestions]);
+
   const startWithCount = (count: number) => {
     setQuantity(count);
+    setDurationSeconds(getDurationForCount(count));
     // Subject-specific: sample globally
     if (subject) {
       if (questions.length < count) {
@@ -106,50 +136,85 @@ export default function TestRunner({ subject }: { subject?: string }) {
     if (!started || !testQuestions.length) return;
     reset();
     setSubmitted(false);
-    setResult(null);
+    submittedRef.current = false;
+    setAutoSubmitting(false);
+    autoSubmittingRef.current = false;
     setCurrentIdx(0);
     setTimeTaken(0);
+    setSubmitError("");
+    setRemainingSeconds(durationSeconds);
+
     const start = Date.now();
     const interval = setInterval(() => {
-      setTimeTaken(Math.floor((Date.now() - start) / 1000));
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const remaining = Math.max(0, durationSeconds - elapsed);
+      setTimeTaken(elapsed);
+      setRemainingSeconds(remaining);
+
+      if (
+        remaining <= 0 &&
+        !submittedRef.current &&
+        !autoSubmittingRef.current
+      ) {
+        onSubmit(true, elapsed);
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, [started, testQuestions, reset, setTimeTaken]);
+  }, [started, testQuestions, durationSeconds, reset, setTimeTaken]);
 
-  const onSubmit = async () => {
-    const normalizedAnswers = testQuestions.map((q) => {
-      const existing = answers.find((a) => a.questionId === q._id);
+  const onSubmit = async (auto = false, elapsedOverride?: number) => {
+    if (submittedRef.current || autoSubmittingRef.current) return;
+
+    setSubmitError("");
+    if (auto) {
+      setAutoSubmitting(true);
+      autoSubmittingRef.current = true;
+    }
+    setSubmitted(true);
+    submittedRef.current = true;
+
+    const normalizedAnswers = (testQuestionsRef.current || []).map((q) => {
+      const existing = (answersRef.current || []).find(
+        (a) => a.questionId === q._id
+      );
       return {
         questionId: q._id,
         selectedOption: existing?.selectedOption ?? "",
       };
     });
 
-    const payload = { answers: normalizedAnswers, timeTaken, subject };
-    const res = await fetch("/api/tests/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      const breakdown = testQuestions.map((q) => {
-        const user = normalizedAnswers.find(
-          (a) => a.questionId === q._id
-        )?.selectedOption;
-        const correct = user === q.correctAnswer;
-        return {
-          questionId: q._id,
-          question: q.question,
-          selected: user,
-          correctAnswer: q.correctAnswer,
-          explanation: q.explanation,
-          correct,
-        };
+    const payload = {
+      answers: normalizedAnswers,
+      timeTaken:
+        typeof elapsedOverride === "number"
+          ? Math.min(durationSeconds, elapsedOverride)
+          : Math.min(durationSeconds, timeTaken),
+      subject,
+    };
+    try {
+      const res = await fetch("/api/tests/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      setResult({ score: data.score, total: testQuestions.length, breakdown });
+      const data = await res.json();
+      if (res.ok && data.attemptId) {
+        router.push(`/test/result?attemptId=${data.attemptId}`);
+        return;
+      }
+      setSubmitError(data?.error || "Failed to submit test. Please try again.");
+      setSubmitted(false);
+      submittedRef.current = false;
+      setAutoSubmitting(false);
+      autoSubmittingRef.current = false;
+    } catch (err) {
+      console.error(err);
+      setSubmitError("Network error. Please try again.");
+      setSubmitted(false);
+      submittedRef.current = false;
+      setAutoSubmitting(false);
+      autoSubmittingRef.current = false;
     }
-    setSubmitted(true);
   };
 
   const current = testQuestions[currentIdx];
@@ -184,7 +249,9 @@ export default function TestRunner({ subject }: { subject?: string }) {
       ) : (
         <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
           <span>Question count: {quantity}</span>
-          <span className="ml-auto text-xs">Time: {timeTaken}s</span>
+          <span className="ml-auto text-xs font-semibold text-slate-700">
+            Time left: {formatTime(remainingSeconds)}
+          </span>
         </div>
       )}
 
@@ -250,35 +317,12 @@ export default function TestRunner({ subject }: { subject?: string }) {
                 </button>
               )}
             </div>
-          </div>
-
-          {submitted && result && (
-            <div className="border rounded p-3 bg-white shadow space-y-2">
-              <p className="font-semibold">Result</p>
-              <p>
-                Score: {result.score} / {result.total}
+            {submitError && (
+              <p className="text-sm text-red-600" role="alert">
+                {submitError}
               </p>
-              <div className="divide-y">
-                {result.breakdown.map((b) => (
-                  <div key={b.questionId} className="py-2 text-sm space-y-1">
-                    <p className="font-medium">{b.question}</p>
-                    <p
-                      className={b.correct ? "text-green-700" : "text-red-700"}
-                    >
-                      {b.correct ? "Correct" : "Incorrect"}
-                    </p>
-                    <p>Chosen: {b.selected ?? "No answer"}</p>
-                    <p>Correct: {b.correctAnswer}</p>
-                    {b.explanation && (
-                      <p className="text-slate-600">
-                        Explanation: {b.explanation}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
     </div>
