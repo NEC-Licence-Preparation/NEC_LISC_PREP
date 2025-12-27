@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 import Question from "@/models/Question";
 import TestAttempt from "@/models/TestAttempt";
 import { Types } from "mongoose";
+import { updateUserStreak } from "@/lib/streakUtils";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,7 +56,17 @@ export async function POST(req: NextRequest) {
       faculty: userFaculty,
     });
 
-    return NextResponse.json({ score, attemptId: attempt._id });
+    // Update user streak
+    let streakData = null;
+    if (token.email) {
+      streakData = await updateUserStreak(token.email);
+    }
+
+    return NextResponse.json({ 
+      score, 
+      attemptId: attempt._id,
+      streak: streakData 
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

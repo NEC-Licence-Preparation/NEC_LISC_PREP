@@ -16,6 +16,7 @@ interface Props {
   onAnswer: (answer: { questionId: string; selectedOption: string }) => void;
   selectedOption?: string;
   showExplanation?: boolean;
+  showBookmark?: boolean;
 }
 
 export default function QuestionCard({
@@ -23,12 +24,63 @@ export default function QuestionCard({
   onAnswer,
   selectedOption,
   showExplanation = true,
+  showBookmark = true,
 }: Props) {
   const [selected, setSelected] = useState(selectedOption ?? "");
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
   useEffect(() => {
     setSelected(selectedOption ?? "");
   }, [selectedOption]);
+
+  useEffect(() => {
+    if (showBookmark) {
+      checkBookmark();
+    }
+  }, [question._id, showBookmark]);
+
+  const checkBookmark = async () => {
+    try {
+      const res = await fetch(`/api/bookmarks/${question._id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setIsBookmarked(data.isBookmarked);
+      }
+    } catch (error) {
+      console.error("Error checking bookmark:", error);
+    }
+  };
+
+  const toggleBookmark = async () => {
+    setBookmarkLoading(true);
+    try {
+      if (isBookmarked) {
+        const res = await fetch("/api/bookmarks", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionId: question._id }),
+        });
+        if (res.ok) {
+          setIsBookmarked(false);
+        }
+      } else {
+        const res = await fetch("/api/bookmarks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionId: question._id }),
+        });
+        if (res.ok) {
+          setIsBookmarked(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    } finally {
+      setBookmarkLoading(false);
+    }
+  };
+
   return (
     <div className="border-2 border-[#DCD6F7] rounded-xl p-6 bg-gradient-to-br from-white to-[#F4EEFF]/30 shadow-lg">
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#DCD6F7]/50">
@@ -38,6 +90,23 @@ export default function QuestionCard({
             {question.subject} • {question.faculty}
           </span>
         </div>
+        {showBookmark && (
+          <button
+            onClick={toggleBookmark}
+            disabled={bookmarkLoading}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-sm transition-all disabled:opacity-50 ${
+              isBookmarked
+                ? "bg-[#424874] text-white hover:bg-[#424874]/90 shadow-md"
+                : "bg-[#DCD6F7] text-[#424874] hover:bg-[#A6B1E1] hover:text-white border border-[#A6B1E1]"
+            }`}
+            title={isBookmarked ? "Remove bookmark" : "Bookmark question"}
+          >
+            <span className="text-lg">{isBookmarked ? "🔖" : "📑"}</span>
+            <span className="text-xs">
+              {bookmarkLoading ? "..." : isBookmarked ? "Saved" : "Save"}
+            </span>
+          </button>
+        )}
       </div>
 
       <div className="mb-6">

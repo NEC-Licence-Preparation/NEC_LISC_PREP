@@ -70,37 +70,30 @@ export const authOptions: NextAuthOptions = {
 
       // On fresh login (account exists), always load from DB
       if (account && token.email) {
-        await connectDB();
-        const existing = await User.findOne({ email: token.email }).lean();
-        if (existing) {
-          token.role = existing.role;
-          token.userId = String(existing._id);
-          token.faculty = existing.faculty || null;
-          console.log(
-            "JWT: Fresh login loaded faculty from DB:",
-            existing.faculty,
-            "for",
-            token.email
-          );
+        try {
+          await connectDB();
+          const existing = await User.findOne({ email: token.email }).lean();
+          if (existing) {
+            token.role = existing.role;
+            token.userId = String(existing._id);
+            token.faculty = existing.faculty || null;
+            console.log(
+              "JWT: Fresh login loaded faculty from DB:",
+              existing.faculty,
+              "for",
+              token.email
+            );
+          }
+        } catch (error) {
+          console.error("JWT callback error on login:", error);
         }
         return token;
       }
 
-      // On subsequent requests (no account), check if we need to sync from DB
+      // On subsequent requests, use cached token values
       if (user) {
         token.role = (user as { role?: "admin" | "user" }).role || "user";
         token.faculty = (user as { faculty?: string | null }).faculty || null;
-      }
-
-      // Always sync faculty from DB on every request to ensure it's current
-      if (token.email) {
-        await connectDB();
-        const existing = await User.findOne({ email: token.email }).lean();
-        if (existing) {
-          token.faculty = existing.faculty || null;
-          token.userId = token.userId || String(existing._id);
-          token.role = token.role || existing.role;
-        }
       }
 
       return token;

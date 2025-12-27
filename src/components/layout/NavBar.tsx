@@ -149,6 +149,20 @@ export default function NavBar() {
                     </Link>
                   )}
                   <Link
+                    href="/bookmarks"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Bookmarks
+                  </Link>
+                  <Link
+                    href="/stats"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Statistics
+                  </Link>
+                  <Link
                     href="/my-tickets"
                     className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
                     onClick={() => setIsMenuOpen(false)}

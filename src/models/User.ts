@@ -6,6 +6,9 @@ export interface IUser {
   password: string | null; // null for OAuth-only users
   role: "admin" | "user";
   faculty?: string | null;
+  currentStreak?: number;
+  longestStreak?: number;
+  lastActivityDate?: Date | null;
   createdAt?: Date;
 }
 
@@ -25,6 +28,9 @@ const UserSchema = new Schema<IUser>(
       required: false,
     },
     role: { type: String, enum: ["admin", "user"], default: "user" },
+    currentStreak: { type: Number, default: 0 },
+    longestStreak: { type: Number, default: 0 },
+    lastActivityDate: { type: Date, default: null },
   },
   { timestamps: { createdAt: true, updatedAt: true }, strict: false }
 );

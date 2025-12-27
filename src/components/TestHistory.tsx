@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import ProgressChart from "./Charts/ProgressChart";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Attempt = {
   _id: string;
@@ -33,6 +33,9 @@ const subjectFetcher = async (url: string) => {
 
 export default function TestHistory() {
   const router = useRouter();
+  const [wrongCount, setWrongCount] = useState<number>(0);
+  const [loadingWrong, setLoadingWrong] = useState(true);
+  
   const { data, error, isLoading } = useSWR<Attempt[]>(
     "/api/tests/history",
     fetcher
@@ -42,6 +45,24 @@ export default function TestHistory() {
     isLoading: subjectsLoading,
     error: subjectsError,
   } = useSWR<SubjectWithCount[]>("/api/subjects", subjectFetcher);
+
+  useEffect(() => {
+    const fetchWrongCount = async () => {
+      try {
+        const res = await fetch("/api/tests/wrong/count");
+        if (res.ok) {
+          const data = await res.json();
+          setWrongCount(data.count || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch wrong count:", error);
+      } finally {
+        setLoadingWrong(false);
+      }
+    };
+
+    fetchWrongCount();
+  }, []);
 
   // Helper function to shorten subject names
   const shortenSubject = (subject: string) => {
@@ -92,6 +113,61 @@ export default function TestHistory() {
             ))}
           </ul>
         )}
+        
+        {/* Quick Practice Tests */}
+        <div className="mt-6 pt-4 border-t-2 border-[#DCD6F7]">
+          <p className="text-sm font-semibold text-[#424874] mb-3">
+            Quick Practice Tests
+          </p>
+          <div className="space-y-2">
+            {/* Daily 10 */}
+            <div className="flex items-center justify-between p-3 border border-[#DCD6F7] rounded-lg hover:bg-[#F4EEFF] transition">
+              <div className="flex-1">
+                <p className="font-medium text-[#424874] text-sm">Daily 10</p>
+                <p className="text-xs text-[#A6B1E1]">10 random questions</p>
+              </div>
+              <button
+                onClick={() => router.push("/test?mode=daily10")}
+                className="bg-[#424874] text-white px-4 py-2 rounded text-xs hover:bg-[#424874]/90 transition font-medium"
+              >
+                Start
+              </button>
+            </div>
+
+            {/* Daily 100 */}
+            <div className="flex items-center justify-between p-3 border border-[#DCD6F7] rounded-lg hover:bg-[#F4EEFF] transition">
+              <div className="flex-1">
+                <p className="font-medium text-[#424874] text-sm">Daily 100</p>
+                <p className="text-xs text-[#A6B1E1]">100 random questions</p>
+              </div>
+              <button
+                onClick={() => router.push("/test?mode=daily100")}
+                className="bg-[#A6B1E1] text-white px-4 py-2 rounded text-xs hover:bg-[#A6B1E1]/90 transition font-medium"
+              >
+                Start
+              </button>
+            </div>
+
+            {/* Retest Wrong Questions */}
+            <div className="flex items-center justify-between p-3 border border-[#DCD6F7] rounded-lg hover:bg-[#F4EEFF] transition">
+              <div className="flex-1">
+                <p className="font-medium text-[#424874] text-sm">
+                  Retest Wrong Questions
+                </p>
+                <p className="text-xs text-[#A6B1E1]">
+                  {loadingWrong ? "Loading..." : `${wrongCount} question${wrongCount !== 1 ? "s" : ""} available • 10 question batch`}
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/retest-wrong")}
+                disabled={wrongCount === 0}
+                className="bg-[#DCD6F7] border border-[#A6B1E1] text-[#424874] px-4 py-2 rounded text-xs hover:bg-[#DCD6F7]/80 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              >
+                Start
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow">
         <p className="font-semibold mb-2 text-[#424874]">Scores by Subject</p>
