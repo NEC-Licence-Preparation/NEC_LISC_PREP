@@ -38,11 +38,13 @@ export async function POST(req: NextRequest) {
 
     const score = graded.filter((g) => g.correct).length;
 
-    // Get userId from token (stored for OAuth users) or use token.sub (for credential users)
+    // Get userId and faculty from token
     const userIdStr = (token as any).userId || token.sub;
     const userObjectId = Types.ObjectId.isValid(String(userIdStr))
       ? new Types.ObjectId(String(userIdStr))
       : undefined;
+
+    const userFaculty = (token as any).faculty || null;
 
     const attempt = await TestAttempt.create({
       userId: userObjectId ?? (userIdStr as any),
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
       score,
       timeTaken,
       subject,
+      faculty: userFaculty,
     });
 
     return NextResponse.json({ score, attemptId: attempt._id });

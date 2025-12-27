@@ -13,6 +13,7 @@ export interface ITestAttempt {
   timeTaken: number; // seconds
   date: Date;
   subject?: string;
+  faculty?: string; // User's faculty at time of attempt
 }
 
 const AnswerSchema = new Schema<IAnswer>({
@@ -29,6 +30,7 @@ const TestAttemptSchema = new Schema<ITestAttempt>({
   timeTaken: { type: Number, required: true },
   date: { type: Date, default: () => new Date() },
   subject: { type: String },
+  faculty: { type: String },
 });
 
 const TestAttempt =

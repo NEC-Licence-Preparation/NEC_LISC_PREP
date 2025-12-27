@@ -22,9 +22,17 @@ export async function GET(req: NextRequest) {
       ? new Types.ObjectId(String(userIdStr))
       : null;
 
-    const matchStage = userObjectId
+    const userFaculty = (token as any).faculty || null;
+
+    // Build match stage with userId and optionally faculty
+    const matchStage: any = userObjectId
       ? { userId: userObjectId }
       : { userId: userIdStr };
+
+    // Filter by faculty if user has selected one
+    if (userFaculty) {
+      matchStage.faculty = userFaculty;
+    }
 
     const latestByQuestion = await TestAttempt.aggregate([
       { $match: matchStage },

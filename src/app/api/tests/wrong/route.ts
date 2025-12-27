@@ -18,16 +18,23 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
-    // Get userId from token (stored for OAuth users) or use token.sub (for credential users)
+    // Get userId and faculty from token
     const userIdStr = (token as any).userId || token.sub;
     const userObjectId = Types.ObjectId.isValid(String(userIdStr))
       ? new Types.ObjectId(String(userIdStr))
       : null;
 
-    // Aggregate to find latest correctness per question for this user
-    const matchStage = userObjectId
+    const userFaculty = (token as any).faculty || null;
+
+    // Build match stage with userId and optionally faculty
+    const matchStage: any = userObjectId
       ? { userId: userObjectId }
       : { userId: userIdStr };
+
+    // Filter by faculty if user has selected one
+    if (userFaculty) {
+      matchStage.faculty = userFaculty;
+    }
 
     const latestByQuestion = await TestAttempt.aggregate([
       { $match: matchStage },

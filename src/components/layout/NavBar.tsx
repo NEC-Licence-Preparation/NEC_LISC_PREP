@@ -84,8 +84,13 @@ export default function NavBar() {
                     >
                       Admin
                     </Link>
-                  )}
-                  <button
+                  )}                  <Link
+                    href="/profile"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>                  <button
                     onClick={() => {
                       signOut({ callbackUrl: "/" });
                       setIsMenuOpen(false);
