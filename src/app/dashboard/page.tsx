@@ -30,6 +30,18 @@ export default async function DashboardPage() {
               Start Test
             </Link>
             <Link
+              href="/test?mode=daily10"
+              className="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded text-center hover:bg-slate-100 transition"
+            >
+              Daily 10
+            </Link>
+            <Link
+              href="/test?mode=daily100"
+              className="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded text-center hover:bg-slate-100 transition"
+            >
+              Daily 100
+            </Link>
+            <Link
               href="/retest-wrong"
               className="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded text-center hover:bg-slate-100 transition"
             >
