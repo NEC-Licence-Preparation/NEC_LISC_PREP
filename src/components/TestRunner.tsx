@@ -310,7 +310,7 @@ export default function TestRunner({ subject }: { subject?: string }) {
               ) : (
                 <button
                   className="bg-slate-900 text-white px-4 py-2 rounded"
-                  onClick={onSubmit}
+                  onClick={() => onSubmit()}
                   disabled={submitted}
                 >
                   Submit Test

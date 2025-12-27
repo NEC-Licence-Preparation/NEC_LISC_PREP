@@ -8,7 +8,7 @@ import Question from "@/models/Question";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } | Promise<{ id: string }> }
 ) {
   try {
     const token = (await getToken({
@@ -18,7 +18,7 @@ export async function GET(
     if (!token)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const attemptId = params?.id;
+    const { id: attemptId } = await params;
     if (!attemptId)
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
