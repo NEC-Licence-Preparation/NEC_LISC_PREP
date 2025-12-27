@@ -11,7 +11,15 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const subject = searchParams.get("subject");
-    const filter = subject ? { subject } : {};
+    const token = (await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    })) as (JWT & { faculty?: string | null }) | null;
+
+    const filter: Record<string, unknown> = {};
+    if (subject) filter.subject = subject;
+    if (token?.faculty) filter.faculty = token.faculty;
+
     await connectDB();
     const questions = await Question.find(filter).lean();
     return NextResponse.json(questions);

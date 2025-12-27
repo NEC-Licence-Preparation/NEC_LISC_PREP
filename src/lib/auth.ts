@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
+          faculty: user.faculty,
         };
       },
     }),
@@ -49,6 +50,7 @@ export const authOptions: NextAuthOptions = {
               name: user.name || profile?.name,
               email: user.email,
               role: "user",
+              faculty: null,
               password: null,
             });
           }
@@ -60,29 +62,60 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.role = (user as { role?: "admin" | "user" }).role || "user";
+    async jwt({ token, user, account, trigger, session }) {
+      // Handle session updates (e.g., when faculty is set)
+      if (trigger === "update" && session && (session as any).faculty) {
+        token.faculty = (session as any).faculty;
+        return token;
       }
-      // If logged in via Google, get user from DB and store MongoDB _id
-      if (account?.provider === "google" && token.email) {
+
+      // On fresh login (account exists), always load from DB
+      if (account && token.email) {
         await connectDB();
         const existing = await User.findOne({ email: token.email });
         if (existing) {
           token.role = existing.role;
-          token.userId = String(existing._id); // Store MongoDB user ID
+          token.userId = String(existing._id);
+          token.faculty = existing.faculty || null;
+          console.log(
+            "JWT: Fresh login loaded faculty from DB:",
+            existing.faculty,
+            "for",
+            token.email
+          );
+        }
+        return token;
+      }
+
+      // On subsequent requests (no account), check if we need to sync from DB
+      if (user) {
+        token.role = (user as { role?: "admin" | "user" }).role || "user";
+        token.faculty = (user as { faculty?: string | null }).faculty || null;
+      }
+
+      // Always sync faculty from DB on every request to ensure it's current
+      if (token.email) {
+        await connectDB();
+        const existing = await User.findOne({ email: token.email });
+        if (existing) {
+          token.faculty = existing.faculty || null;
+          token.userId = token.userId || String(existing._id);
+          token.role = token.role || existing.role;
         }
       }
-      // For credentials provider, user ID is already in token.sub
-      if (account?.provider === "credentials" && user) {
-        token.userId = (user as any).id || token.sub;
-      }
+
       return token;
     },
     async session({ session, token }) {
       session.role = (token as JWT).role || "user";
-      if (session.user && token.sub) {
+      if (session.user && (token as JWT & { userId?: string }).userId) {
+        session.user.id = (token as JWT & { userId?: string }).userId;
+      } else if (session.user && token.sub) {
         session.user.id = token.sub;
+      }
+      if (session.user) {
+        session.user.faculty =
+          (token as JWT & { faculty?: string | null }).faculty || null;
       }
       return session;
     },

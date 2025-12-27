@@ -5,9 +5,12 @@ import type { JWT } from "next-auth/jwt";
 
 const adminPaths = ["/admin"];
 const protectedPaths = ["/dashboard", "/admin"];
+const onboardingPath = "/choose-faculty";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  const isOnboarding = pathname.startsWith(onboardingPath);
 
   // Public paths skip
   if (!protectedPaths.some((p) => pathname.startsWith(p))) {
@@ -32,9 +35,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
+  // First-login onboarding: redirect to faculty chooser if faculty is not set
+  const tokenWithFaculty = token as JWT & { faculty?: string | null };
+  if (!tokenWithFaculty.faculty && !isOnboarding) {
+    const chooseUrl = new URL(onboardingPath, req.url);
+    return NextResponse.redirect(chooseUrl);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/choose-faculty"],
 };

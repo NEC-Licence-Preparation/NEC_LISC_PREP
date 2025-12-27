@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
+
 import { connectDB } from "@/lib/mongodb";
 import Question from "@/models/Question";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const token = (await getToken({
+      req: req as any,
+      secret: process.env.NEXTAUTH_SECRET,
+    })) as (JWT & { faculty?: string | null }) | null;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectDB();
-    const subjects = await Question.distinct("subject");
+    const filter: Record<string, unknown> = {};
+    if (token.faculty) {
+      filter.faculty = token.faculty;
+    }
+    const subjects = await Question.distinct("subject", filter);
     return NextResponse.json(subjects);
   } catch (e) {
     console.error("Error fetching subjects:", e);

@@ -19,6 +19,7 @@ const fetcher = async (url: string) => {
 
 const subjectFetcher = async (url: string) => {
   const res = await fetch(url);
+  if (res.status === 401) return [];
   if (!res.ok) throw new Error("Failed to fetch");
   const data = await res.json();
   return Array.isArray(data) ? data : [];
