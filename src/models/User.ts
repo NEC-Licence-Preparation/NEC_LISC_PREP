@@ -21,7 +21,7 @@ const UserSchema = new Schema<IUser>(
         "Computer Engineering",
         "Electrical Engineering",
       ],
-      default: null,
+      default: undefined,
       required: false,
     },
     role: { type: String, enum: ["admin", "user"], default: "user" },

@@ -50,9 +50,8 @@ export const authOptions: NextAuthOptions = {
               name: user.name || profile?.name,
               email: user.email,
               role: "user",
-              faculty: null,
-              password: null,
-            });
+              password: undefined,
+            } as Partial<typeof User.schema.obj>);
           }
           return true;
         } catch (error) {
@@ -72,7 +71,7 @@ export const authOptions: NextAuthOptions = {
       // On fresh login (account exists), always load from DB
       if (account && token.email) {
         await connectDB();
-        const existing = await User.findOne({ email: token.email });
+        const existing = await User.findOne({ email: token.email }).lean();
         if (existing) {
           token.role = existing.role;
           token.userId = String(existing._id);
@@ -96,7 +95,7 @@ export const authOptions: NextAuthOptions = {
       // Always sync faculty from DB on every request to ensure it's current
       if (token.email) {
         await connectDB();
-        const existing = await User.findOne({ email: token.email });
+        const existing = await User.findOne({ email: token.email }).lean();
         if (existing) {
           token.faculty = existing.faculty || null;
           token.userId = token.userId || String(existing._id);
