@@ -20,12 +20,6 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/register"
-                className="bg-slate-900 text-white px-5 py-3 rounded"
-              >
-                Get Started
-              </Link>
-              <Link
                 href="/dashboard"
                 className="border border-slate-900 text-slate-900 px-5 py-3 rounded"
               >
