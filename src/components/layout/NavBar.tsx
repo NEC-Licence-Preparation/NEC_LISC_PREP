@@ -163,6 +163,20 @@ export default function NavBar() {
                     Statistics
                   </Link>
                   <Link
+                    href="/friends"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Friends
+                  </Link>
+                  <Link
+                    href="/leaderboard"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Leaderboard
+                  </Link>
+                  <Link
                     href="/my-tickets"
                     className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
                     onClick={() => setIsMenuOpen(false)}

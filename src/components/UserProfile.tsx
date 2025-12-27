@@ -1,6 +1,7 @@
 "use client";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const FACULTIES = [
   "Civil Engineering",
@@ -10,12 +11,42 @@ const FACULTIES = [
 
 export default function UserProfile() {
   const { data: session, update: updateSession } = useSession();
+  const router = useRouter();
   const [selectedFaculty, setSelectedFaculty] = useState(
     session?.user?.faculty || ""
   );
+  const [username, setUsername] = useState("");
+  const [currentUsername, setCurrentUsername] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [usernameSuccess, setUsernameSuccess] = useState("");
+  const [isUsernameLoading, setIsUsernameLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch current username
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const res = await fetch("/api/profile/faculty");
+        const data = await res.json();
+        if (res.ok && data.user?.username) {
+          setCurrentUsername(data.user.username);
+          setUsername(data.user.username);
+        }
+      } catch (error) {
+        console.error("Error fetching username:", error);
+      } finally {
+        setIsUsernameLoading(false);
+      }
+    };
+
+    if (session?.user) {
+      fetchUsername();
+    }
+  }, [session]);
 
   if (!session?.user) {
     return <p className="text-[#424874]/70">Loading profile...</p>;
@@ -50,6 +81,68 @@ export default function UserProfile() {
       setSaveError("Network error. Please try again.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleUsernameSave = async () => {
+    setUsernameError("");
+    setUsernameSuccess("");
+
+    if (username.trim().length < 3) {
+      setUsernameError("Username must be at least 3 characters");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setUsernameError(
+        "Username can only contain letters, numbers, and underscores"
+      );
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setUsernameError(data?.error || "Failed to update username");
+        return;
+      }
+
+      setCurrentUsername(data.username);
+      setUsernameSuccess("Username updated successfully!");
+      setTimeout(() => setUsernameSuccess(""), 3000);
+    } catch (err) {
+      console.error(err);
+      setUsernameError("Network error. Please try again.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        alert("Failed to delete account. Please try again.");
+        setIsDeleting(false);
+        return;
+      }
+
+      // Sign out and redirect
+      await signOut({ callbackUrl: "/login" });
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+      setIsDeleting(false);
     }
   };
 
@@ -88,6 +181,52 @@ export default function UserProfile() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Username Card */}
+      <div className="border border-[#DCD6F7] rounded p-6 bg-white shadow">
+        <h2 className="text-lg font-semibold mb-4 text-[#424874]">Username</h2>
+        <p className="text-sm text-[#424874]/70 mb-4">
+          Set a unique username to be discoverable by friends.
+        </p>
+
+        {isUsernameLoading ? (
+          <p className="text-[#424874]/70">Loading...</p>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter username"
+                className="w-full px-3 py-2 border border-[#DCD6F7] rounded focus:outline-none focus:ring-2 focus:ring-[#A6B1E1]"
+              />
+              <p className="text-xs text-[#424874]/60 mt-1">
+                Only letters, numbers, and underscores allowed
+              </p>
+            </div>
+
+            {usernameError && (
+              <p className="text-sm text-red-600" role="alert">
+                {usernameError}
+              </p>
+            )}
+            {usernameSuccess && (
+              <p className="text-sm text-green-600" role="alert">
+                {usernameSuccess}
+              </p>
+            )}
+
+            <button
+              onClick={handleUsernameSave}
+              disabled={username === currentUsername || username.trim().length < 3}
+              className="px-4 py-2 rounded bg-[#424874] text-white hover:bg-[#424874]/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              {currentUsername ? "Update Username" : "Set Username"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Faculty Selection Card */}
@@ -139,6 +278,49 @@ export default function UserProfile() {
         >
           {isSaving ? "Saving..." : "Save Faculty"}
         </button>
+      </div>
+
+      {/* Delete Account Card */}
+      <div className="border border-red-300 rounded p-6 bg-red-50 shadow">
+        <h2 className="text-lg font-semibold mb-4 text-red-700">
+          Danger Zone
+        </h2>
+        <p className="text-sm text-red-600 mb-4">
+          Deleting your account will permanently remove all your data including
+          test history, bookmarks, streaks, and friend connections. This action
+          cannot be undone.
+        </p>
+
+        {showDeleteConfirm ? (
+          <div className="space-y-4">
+            <p className="text-sm font-semibold text-red-700">
+              Are you absolutely sure?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete My Account"}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition"
+          >
+            Delete Account
+          </button>
+        )}
       </div>
     </div>
   );

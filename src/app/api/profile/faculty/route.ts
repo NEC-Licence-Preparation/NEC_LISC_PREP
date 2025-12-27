@@ -52,3 +52,37 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
+// GET: Fetch user profile (including username)
+export async function GET(req: NextRequest) {
+  try {
+    const token = (await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    })) as JWT | null;
+    if (!token)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await connectDB();
+
+    const userIdStr = (token as any).userId || token.sub;
+    const userObjectId = Types.ObjectId.isValid(String(userIdStr))
+      ? new Types.ObjectId(String(userIdStr))
+      : null;
+
+    const userId = userObjectId ?? (userIdStr as any);
+    const user = await User.findById(userId)
+      .select("username name email faculty image")
+      .lean();
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user });
+  } catch (e) {
+    console.error("Error fetching profile:", e);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+

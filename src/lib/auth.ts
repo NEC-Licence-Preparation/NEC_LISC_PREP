@@ -44,6 +44,8 @@ export const authOptions: NextAuthOptions = {
           await connectDB();
           const existingUser = await User.findOne({ email: user.email });
 
+          const googleImage = user.image || (profile as any)?.picture || null;
+
           if (!existingUser) {
             // Create new user for Google OAuth
             await User.create({
@@ -51,7 +53,14 @@ export const authOptions: NextAuthOptions = {
               email: user.email,
               role: "user",
               password: undefined,
+              image: googleImage,
             } as Partial<typeof User.schema.obj>);
+          } else {
+            // Backfill or refresh the stored image from Google when available
+            if (googleImage && existingUser.image !== googleImage) {
+              existingUser.image = googleImage;
+              await existingUser.save();
+            }
           }
           return true;
         } catch (error) {
@@ -77,6 +86,7 @@ export const authOptions: NextAuthOptions = {
             token.role = existing.role;
             token.userId = String(existing._id);
             token.faculty = existing.faculty || null;
+            token.image = (existing as any).image || null;
             console.log(
               "JWT: Fresh login loaded faculty from DB:",
               existing.faculty,
@@ -94,6 +104,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as { role?: "admin" | "user" }).role || "user";
         token.faculty = (user as { faculty?: string | null }).faculty || null;
+        token.image = (user as { image?: string | null }).image || token.image || null;
       }
 
       return token;
@@ -108,6 +119,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.faculty =
           (token as JWT & { faculty?: string | null }).faculty || null;
+        session.user.image =
+          (token as JWT & { image?: string | null }).image || session.user.image || null;
       }
       return session;
     },

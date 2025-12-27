@@ -6,6 +6,8 @@ export interface IUser {
   password: string | null; // null for OAuth-only users
   role: "admin" | "user";
   faculty?: string | null;
+  username?: string;
+  image?: string | null;
   currentStreak?: number;
   longestStreak?: number;
   lastActivityDate?: Date | null;
@@ -17,6 +19,8 @@ const UserSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, default: null },
+    username: { type: String, unique: true, sparse: true },
+    image: { type: String, default: null },
     faculty: {
       type: String,
       enum: [
