@@ -1,16 +1,22 @@
 "use client";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function NavBar() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isAdmin = session?.role === "admin";
+  const userName = session?.user?.name || "User";
+  const userImage = session?.user?.image;
+  const userInitial = useMemo(
+    () => (userName ? userName.charAt(0).toUpperCase() : "U"),
+    [userName]
+  );
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#A6B1E1]/30 bg-[#424874] text-white backdrop-blur-sm shadow-lg">
+    <nav className="sticky top-0 z-50 border-b border-[#A6B1E1]/30 bg-primary text-white backdrop-blur-sm shadow-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         <Link
           href="/"
@@ -24,15 +30,27 @@ export default function NavBar() {
         <div className="flex items-center gap-3 md:hidden">
           {session && (
             <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-wider">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-              <span className="max-w-[100px] truncate text-white/90">
-                {session.user?.name || "User"}
+              <span className="relative h-7 w-7 overflow-hidden rounded-full border border-white/30 bg-white/10">
+                {userImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={userImage}
+                    alt={userName}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-white/80">
+                    {userInitial}
+                  </span>
+                )}
               </span>
+              <span className="max-w-27.5 truncate text-white/90">{userName}</span>
             </div>
           )}
           <button
             type="button"
-            className="relative flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-white/20 bg-white/5 transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="relative flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-white/20 bg-white/5 transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             onClick={() => setIsMenuOpen((prev) => !prev)}
             aria-expanded={isMenuOpen}
             aria-label="Toggle menu"
@@ -57,7 +75,7 @@ export default function NavBar() {
 
         {/* Desktop & Mobile dropdown menu */}
         <div
-          className={`absolute left-0 right-0 top-full origin-top border-b border-[#A6B1E1]/20 bg-[#424874]/98 backdrop-blur-md transition-all duration-300 ease-out md:static md:border-none md:bg-transparent md:backdrop-blur-none ${
+          className={`absolute left-0 right-0 top-full origin-top border-b border-[#A6B1E1]/20 bg-primary/98 backdrop-blur-md transition-all duration-300 ease-out md:static md:border-none md:bg-transparent md:backdrop-blur-none ${
             isMenuOpen
               ? "translate-y-0 scale-y-100 opacity-100"
               : "-translate-y-2 scale-y-95 opacity-0 md:translate-y-0 md:scale-y-100 md:opacity-100"
@@ -73,8 +91,22 @@ export default function NavBar() {
                 <>
                   {/* Desktop session badge */}
                   <div className="hidden items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-wider md:flex">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-                    <span className="text-white/90">{session.user?.name}</span>
+                    <span className="relative h-8 w-8 overflow-hidden rounded-full border border-white/30 bg-white/10">
+                      {userImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={userImage}
+                          alt={userName}
+                          className="h-full w-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center text-white/80 text-sm">
+                          {userInitial}
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-white/90">{userName}</span>
                   </div>
                   {isAdmin && (
                     <Link
