@@ -14,11 +14,13 @@ export default async function AdminPage() {
   const unlocked = cookieStore.get("admin_unlock")?.value === "1";
   if (!unlocked && (!session || session.role !== "admin")) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-[#F4EEFF]">
         <NavBar />
         <main className="max-w-lg mx-auto p-6 space-y-4">
-          <h1 className="text-2xl font-semibold">Admin Access</h1>
-          <p className="text-sm text-slate-600">
+          <h1 className="text-2xl font-semibold text-[#424874]">
+            Admin Access
+          </h1>
+          <p className="text-sm text-[#424874]/70">
             Enter the admin panel password to manage questions.
           </p>
           <AdminUnlockForm />
@@ -28,17 +30,19 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F4EEFF]">
       <NavBar />
       <main className="max-w-5xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-            <p className="text-slate-600 text-sm">
+            <h1 className="text-2xl font-semibold text-[#424874]">
+              Admin Dashboard
+            </h1>
+            <p className="text-[#424874]/70 text-sm">
               Manage questions and users.
             </p>
           </div>
-          <Link href="/" className="underline">
+          <Link href="/" className="underline text-[#424874]">
             Home
           </Link>
         </div>

@@ -227,17 +227,17 @@ export default function TestRunner({ subject }: { subject?: string }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600">Subject: {subjectLabel}</p>
+      <p className="text-sm text-[#424874]/70">Subject: {subjectLabel}</p>
       {!started ? (
-        <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
+        <div className="flex items-center gap-2 text-sm text-[#424874]/70 flex-wrap">
           <span>Choose question count to start:</span>
           {[10, 20, 100].map((q) => (
             <button
               key={q}
-              className={`px-3 py-1 rounded border ${
+              className={`px-3 py-1 rounded border transition ${
                 quantity === q
-                  ? "bg-slate-900 text-white border-slate-900"
-                  : "border-slate-300"
+                  ? "bg-[#424874] text-white border-[#424874]"
+                  : "border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7]"
               }`}
               onClick={() => startWithCount(q)}
               disabled={isLoading}
@@ -247,16 +247,16 @@ export default function TestRunner({ subject }: { subject?: string }) {
           ))}
         </div>
       ) : (
-        <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
+        <div className="flex items-center gap-2 text-sm text-[#424874]/70 flex-wrap">
           <span>Question count: {quantity}</span>
-          <span className="ml-auto text-xs font-semibold text-slate-700">
+          <span className="ml-auto text-xs font-semibold text-[#424874]">
             Time left: {formatTime(remainingSeconds)}
           </span>
         </div>
       )}
 
       {!started && (
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-[#424874]/70">
           Select a question count to begin your test.
         </p>
       )}
@@ -264,13 +264,15 @@ export default function TestRunner({ subject }: { subject?: string }) {
       {!started && message && <p className="text-sm text-red-600">{message}</p>}
 
       {started && testQuestions.length === 0 && (
-        <p className="text-sm text-slate-600">Not enough questions to start.</p>
+        <p className="text-sm text-[#424874]/70">
+          Not enough questions to start.
+        </p>
       )}
 
       {started && testQuestions.length > 0 && (
         <>
-          <div className="border rounded p-4 bg-white shadow space-y-3">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+          <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow space-y-3">
+            <div className="flex items-center justify-between text-sm text-[#A6B1E1]">
               <span>
                 Question {currentIdx + 1} / {testQuestions.length}
               </span>
@@ -290,7 +292,7 @@ export default function TestRunner({ subject }: { subject?: string }) {
 
             <div className="flex items-center justify-between gap-2">
               <button
-                className="px-4 py-2 rounded border border-slate-300"
+                className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                 onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                 disabled={currentIdx === 0}
               >
@@ -298,7 +300,7 @@ export default function TestRunner({ subject }: { subject?: string }) {
               </button>
               {currentIdx < testQuestions.length - 1 ? (
                 <button
-                  className="px-4 py-2 rounded border border-slate-300"
+                  className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                   onClick={() =>
                     setCurrentIdx((i) =>
                       Math.min(testQuestions.length - 1, i + 1)
@@ -309,7 +311,7 @@ export default function TestRunner({ subject }: { subject?: string }) {
                 </button>
               ) : (
                 <button
-                  className="bg-slate-900 text-white px-4 py-2 rounded"
+                  className="bg-[#424874] text-white px-4 py-2 rounded hover:bg-[#424874]/90 transition"
                   onClick={() => onSubmit()}
                   disabled={submitted}
                 >

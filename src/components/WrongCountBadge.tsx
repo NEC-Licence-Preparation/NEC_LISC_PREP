@@ -6,7 +6,7 @@ export default function WrongCountBadge() {
   const label = isLoading ? "…" : String(count);
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 border border-slate-300"
+      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#DCD6F7] text-[#424874] border border-[#A6B1E1]"
       title="Current wrong-question pool"
     >
       {label}

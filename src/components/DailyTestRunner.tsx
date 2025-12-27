@@ -151,29 +151,29 @@ export default function DailyTestRunner({
     ? answers.find((a) => a.questionId === current._id)?.selectedOption || ""
     : "";
 
-  if (isLoading) return <p>Loading today's test...</p>;
-  if (error)
-    return <p className="text-red-600">Error: {String(error)}</p>;
+  if (isLoading)
+    return <p className="text-[#424874]">Loading today's test...</p>;
+  if (error) return <p className="text-red-600">Error: {String(error)}</p>;
   if (!started || questions.length === 0)
-    return <p className="text-slate-600">No test available.</p>;
+    return <p className="text-[#424874]/70">No test available.</p>;
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600">Daily {setSize}-Question Test</p>
+      <p className="text-sm text-[#424874]/70">Daily {setSize}-Question Test</p>
 
       {started && questions.length > 0 && (
         <>
-          <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-[#424874]/70 flex-wrap">
             <span>
               Question {currentIdx + 1} / {questions.length}
             </span>
-            <span className="ml-auto text-xs font-semibold text-slate-700">
+            <span className="ml-auto text-xs font-semibold text-[#424874]">
               Time left: {formatTime(remainingSeconds)}
             </span>
           </div>
 
-          <div className="border rounded p-4 bg-white shadow space-y-3">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+          <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow space-y-3">
+            <div className="flex items-center justify-between text-sm text-[#A6B1E1]">
               <span>
                 Question {currentIdx + 1} / {questions.length}
               </span>
@@ -193,7 +193,7 @@ export default function DailyTestRunner({
 
             <div className="flex items-center justify-between gap-2">
               <button
-                className="px-4 py-2 rounded border border-slate-300"
+                className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                 onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                 disabled={currentIdx === 0}
               >
@@ -201,7 +201,7 @@ export default function DailyTestRunner({
               </button>
               {currentIdx < questions.length - 1 ? (
                 <button
-                  className="px-4 py-2 rounded border border-slate-300"
+                  className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                   onClick={() =>
                     setCurrentIdx((i) => Math.min(questions.length - 1, i + 1))
                   }
@@ -210,7 +210,7 @@ export default function DailyTestRunner({
                 </button>
               ) : (
                 <button
-                  className="bg-slate-900 text-white px-4 py-2 rounded"
+                  className="bg-[#424874] text-white px-4 py-2 rounded hover:bg-[#424874]/90 transition"
                   onClick={() => onSubmit()}
                   disabled={submitted}
                 >

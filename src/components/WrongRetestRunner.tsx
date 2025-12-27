@@ -121,22 +121,24 @@ export default function WrongRetestRunner() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600">Retest wrong questions (up to 10 per batch)</p>
-      {isLoading && <p>Loading questions...</p>}
-      {!isLoading && info && <p className="text-slate-700 text-sm">{info}</p>}
+      <p className="text-sm text-[#424874]/70">
+        Retest wrong questions (up to 10 per batch)
+      </p>
+      {isLoading && <p className="text-[#424874]">Loading questions...</p>}
+      {!isLoading && info && <p className="text-[#424874] text-sm">{info}</p>}
 
       {started && questions.length > 0 && (
         <>
-          <div className="flex items-center gap-2 text-sm text-slate-600 flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-[#424874]/70 flex-wrap">
             <span>
               Question {currentIdx + 1} / {questions.length}
             </span>
-            <span className="ml-auto text-xs font-semibold text-slate-700">
+            <span className="ml-auto text-xs font-semibold text-[#424874]">
               Time left: {formatTime(remainingSeconds)}
             </span>
           </div>
 
-          <div className="border rounded p-4 bg-white shadow space-y-3">
+          <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow space-y-3">
             {current && (
               <QuestionCard
                 question={current}
@@ -148,7 +150,7 @@ export default function WrongRetestRunner() {
 
             <div className="flex items-center justify-between gap-2">
               <button
-                className="px-4 py-2 rounded border border-slate-300"
+                className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                 onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                 disabled={currentIdx === 0}
               >
@@ -156,7 +158,7 @@ export default function WrongRetestRunner() {
               </button>
               {currentIdx < questions.length - 1 ? (
                 <button
-                  className="px-4 py-2 rounded border border-slate-300"
+                  className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
                   onClick={() =>
                     setCurrentIdx((i) => Math.min(questions.length - 1, i + 1))
                   }
@@ -165,7 +167,7 @@ export default function WrongRetestRunner() {
                 </button>
               ) : (
                 <button
-                  className="bg-slate-900 text-white px-4 py-2 rounded"
+                  className="bg-[#424874] text-white px-4 py-2 rounded hover:bg-[#424874]/90 transition"
                   onClick={onSubmit}
                 >
                   Submit Batch

@@ -18,7 +18,7 @@ export default function UserProfile() {
   const [saveSuccess, setSaveSuccess] = useState("");
 
   if (!session?.user) {
-    return <p className="text-slate-600">Loading profile...</p>;
+    return <p className="text-[#424874]/70">Loading profile...</p>;
   }
 
   const handleFacultySave = async () => {
@@ -56,31 +56,33 @@ export default function UserProfile() {
   return (
     <div className="space-y-6">
       {/* Google OAuth Info Card */}
-      <div className="border rounded p-6 bg-white shadow">
-        <h2 className="text-lg font-semibold mb-4">Account Information</h2>
+      <div className="border border-[#DCD6F7] rounded p-6 bg-white shadow">
+        <h2 className="text-lg font-semibold mb-4 text-[#424874]">
+          Account Information
+        </h2>
         <div className="space-y-3">
           <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <label className="text-xs font-medium text-[#A6B1E1] uppercase tracking-wide">
               Name
             </label>
-            <p className="text-slate-900 mt-1">{session.user.name || "N/A"}</p>
+            <p className="text-[#424874] mt-1">{session.user.name || "N/A"}</p>
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <label className="text-xs font-medium text-[#A6B1E1] uppercase tracking-wide">
               Email
             </label>
-            <p className="text-slate-900 mt-1">{session.user.email || "N/A"}</p>
+            <p className="text-[#424874] mt-1">{session.user.email || "N/A"}</p>
           </div>
           {session.user.image && (
             <div>
-              <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              <label className="text-xs font-medium text-[#A6B1E1] uppercase tracking-wide">
                 Profile Picture
               </label>
               <div className="mt-3">
                 <img
                   src={session.user.image}
                   alt={session.user.name || "Profile"}
-                  className="h-16 w-16 rounded-full border border-slate-200"
+                  className="h-16 w-16 rounded-full border-2 border-[#DCD6F7]"
                 />
               </div>
             </div>
@@ -89,15 +91,20 @@ export default function UserProfile() {
       </div>
 
       {/* Faculty Selection Card */}
-      <div className="border rounded p-6 bg-white shadow">
-        <h2 className="text-lg font-semibold mb-4">Faculty Choice</h2>
-        <p className="text-sm text-slate-600 mb-4">
+      <div className="border border-[#DCD6F7] rounded p-6 bg-white shadow">
+        <h2 className="text-lg font-semibold mb-4 text-[#424874]">
+          Faculty Choice
+        </h2>
+        <p className="text-sm text-[#424874]/70 mb-4">
           Select your faculty to personalize your exam preparation.
         </p>
 
         <div className="space-y-3">
           {FACULTIES.map((faculty) => (
-            <label key={faculty} className="flex items-center gap-3 cursor-pointer">
+            <label
+              key={faculty}
+              className="flex items-center gap-3 cursor-pointer"
+            >
               <input
                 type="radio"
                 name="faculty"
@@ -105,9 +112,9 @@ export default function UserProfile() {
                 checked={selectedFaculty === faculty}
                 onChange={(e) => setSelectedFaculty(e.target.value)}
                 disabled={isSaving}
-                className="w-4 h-4 text-slate-900 cursor-pointer"
+                className="w-4 h-4 accent-[#424874] cursor-pointer"
               />
-              <span className="text-slate-900">{faculty}</span>
+              <span className="text-[#424874]">{faculty}</span>
             </label>
           ))}
         </div>
@@ -126,10 +133,9 @@ export default function UserProfile() {
         <button
           onClick={handleFacultySave}
           disabled={
-            isSaving ||
-            selectedFaculty === (session?.user?.faculty || "")
+            isSaving || selectedFaculty === (session?.user?.faculty || "")
           }
-          className="mt-4 px-4 py-2 rounded bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="mt-4 px-4 py-2 rounded bg-[#424874] text-white hover:bg-[#424874]/90 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           {isSaving ? "Saving..." : "Save Faculty"}
         </button>

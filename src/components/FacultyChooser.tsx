@@ -48,11 +48,11 @@ export default function FacultyChooser({ initialFaculty }: Props) {
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-[#424874]">
           Choose your faculty
         </label>
         <select
-          className="w-full border rounded px-3 py-2"
+          className="w-full border border-[#DCD6F7] rounded px-3 py-2 text-[#424874] focus:outline-none focus:border-[#A6B1E1]"
           value={faculty}
           onChange={(e) => setFaculty(e.target.value)}
           required
@@ -67,7 +67,7 @@ export default function FacultyChooser({ initialFaculty }: Props) {
       {error && <p className="text-red-600 text-sm">{error}</p>}
       <button
         type="submit"
-        className="w-full bg-slate-900 text-white py-2 rounded"
+        className="w-full bg-[#424874] text-white py-2 rounded hover:bg-[#424874]/90 transition"
         disabled={loading}
       >
         {loading ? "Saving..." : "Continue"}

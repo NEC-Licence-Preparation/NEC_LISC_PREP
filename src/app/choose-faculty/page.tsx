@@ -16,10 +16,12 @@ export default async function ChooseFacultyPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-md bg-white shadow rounded p-6 space-y-4">
-        <h1 className="text-2xl font-semibold">Welcome! Select your faculty</h1>
-        <p className="text-sm text-slate-600">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4EEFF] px-4">
+      <div className="w-full max-w-md bg-white shadow rounded p-6 space-y-4 border border-[#DCD6F7]">
+        <h1 className="text-2xl font-semibold text-[#424874]">
+          Welcome! Select your faculty
+        </h1>
+        <p className="text-sm text-[#424874]/70">
           Choose your engineering faculty to get personalized questions tailored
           to your field.
         </p>

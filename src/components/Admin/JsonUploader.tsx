@@ -57,10 +57,10 @@ export default function JsonUploader() {
   };
 
   return (
-    <div className="border rounded p-4 bg-white shadow space-y-3">
+    <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow space-y-3">
       <div>
-        <p className="font-semibold">Upload questions JSON</p>
-        <p className="text-sm text-slate-500">
+        <p className="font-semibold text-[#424874]">Upload questions JSON</p>
+        <p className="text-sm text-[#A6B1E1]">
           Supported formats:
           <br />• Grouped: subject/faculty + questions[] with question, options,
           correctAnswer, optional explanation.
@@ -72,6 +72,7 @@ export default function JsonUploader() {
       <input
         type="file"
         accept="application/json"
+        className="text-[#424874]"
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) onFile(file);

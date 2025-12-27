@@ -37,29 +37,31 @@ export default function TestResult({ attemptId }: { attemptId: string }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[#A6B1E1]">
             Subject: {data.subject || "All"}
           </p>
-          <p className="text-sm text-slate-600">Time: {data.timeTaken}s</p>
+          <p className="text-sm text-[#A6B1E1]">Time: {data.timeTaken}s</p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-semibold">
+          <p className="text-lg font-semibold text-[#424874]">
             Score: {data.score} / {data.total}
           </p>
         </div>
       </div>
 
-      <div className="divide-y">
+      <div className="divide-y divide-[#DCD6F7]">
         {data.breakdown.map((b) => (
           <div key={b.questionId} className="py-3 space-y-1">
-            <p className="font-medium">{b.question}</p>
+            <p className="font-medium text-[#424874]">{b.question}</p>
             <p className={b.correct ? "text-green-700" : "text-red-700"}>
               {b.correct ? "Correct" : "Incorrect"}
             </p>
-            <p>Chosen: {b.selected || "No answer"}</p>
-            <p>Correct: {b.correctAnswer}</p>
+            <p className="text-[#424874]/80">
+              Chosen: {b.selected || "No answer"}
+            </p>
+            <p className="text-[#424874]/80">Correct: {b.correctAnswer}</p>
             {b.explanation && (
-              <p className="text-slate-600 text-sm">
+              <p className="text-[#A6B1E1] text-sm">
                 Explanation: {b.explanation}
               </p>
             )}
@@ -70,13 +72,13 @@ export default function TestResult({ attemptId }: { attemptId: string }) {
       <div className="flex gap-3">
         <Link
           href="/test"
-          className="px-4 py-2 rounded border border-slate-300"
+          className="px-4 py-2 rounded border border-[#A6B1E1] text-[#424874] hover:bg-[#DCD6F7] transition"
         >
           Back to Test
         </Link>
         <Link
           href="/dashboard"
-          className="px-4 py-2 rounded bg-slate-900 text-white"
+          className="px-4 py-2 rounded bg-[#424874] text-white hover:bg-[#424874]/90 transition"
         >
           Go to Dashboard
         </Link>

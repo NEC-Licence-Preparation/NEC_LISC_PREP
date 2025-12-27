@@ -10,7 +10,7 @@ export default function NavBar() {
   const isAdmin = session?.role === "admin";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/95 text-white backdrop-blur-sm shadow-lg">
+    <nav className="sticky top-0 z-50 border-b border-[#A6B1E1]/30 bg-[#424874] text-white backdrop-blur-sm shadow-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         <Link
           href="/"
@@ -57,7 +57,7 @@ export default function NavBar() {
 
         {/* Desktop & Mobile dropdown menu */}
         <div
-          className={`absolute left-0 right-0 top-full origin-top border-b border-white/5 bg-slate-900/98 backdrop-blur-md transition-all duration-300 ease-out md:static md:border-none md:bg-transparent md:backdrop-blur-none ${
+          className={`absolute left-0 right-0 top-full origin-top border-b border-[#A6B1E1]/20 bg-[#424874]/98 backdrop-blur-md transition-all duration-300 ease-out md:static md:border-none md:bg-transparent md:backdrop-blur-none ${
             isMenuOpen
               ? "translate-y-0 scale-y-100 opacity-100"
               : "-translate-y-2 scale-y-95 opacity-0 md:translate-y-0 md:scale-y-100 md:opacity-100"
@@ -84,13 +84,15 @@ export default function NavBar() {
                     >
                       Admin
                     </Link>
-                  )}                  <Link
+                  )}{" "}
+                  <Link
                     href="/profile"
                     className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Profile
-                  </Link>                  <button
+                  </Link>{" "}
+                  <button
                     onClick={() => {
                       signOut({ callbackUrl: "/" });
                       setIsMenuOpen(false);

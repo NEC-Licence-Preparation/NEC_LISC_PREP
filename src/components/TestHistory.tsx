@@ -44,60 +44,56 @@ export default function TestHistory() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <div className="border rounded p-4 bg-white shadow">
-        <p className="font-semibold mb-2">Recent Attempts</p>
+      <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow">
+        <p className="font-semibold mb-2 text-[#424874]">Recent Attempts</p>
         {isLoading && (
-          <p className="text-sm text-slate-500">Loading history...</p>
+          <p className="text-sm text-[#A6B1E1]">Loading history...</p>
         )}
         {error && <p className="text-sm text-red-600">Error loading history</p>}
         {!isLoading && !error && !attempts.length && (
-          <p className="text-sm text-slate-500">No attempts yet.</p>
+          <p className="text-sm text-[#A6B1E1]">No attempts yet.</p>
         )}
         {!!attempts.length && (
           <ul className="space-y-2 text-sm">
             {attempts.map((a) => (
               <li
                 key={a._id}
-                className="flex items-center justify-between border-b pb-1"
+                className="flex items-center justify-between border-b border-[#DCD6F7] pb-1"
               >
-                <span>
+                <span className="text-[#424874]/80">
                   {new Date(a.date).toLocaleDateString()} •{" "}
                   {a.subject || "General"}
                 </span>
-                <span className="font-semibold">{a.score} pts</span>
+                <span className="font-semibold text-[#424874]">
+                  {a.score} pts
+                </span>
               </li>
             ))}
           </ul>
         )}
-        <div className="mt-3">
-          <Link
-            href="/test"
-            className="inline-block bg-slate-900 text-white px-3 py-2 rounded text-sm"
-          >
-            All Subjects Mock Test
-          </Link>
-        </div>
       </div>
-      <div className="border rounded p-4 bg-white shadow">
-        <p className="font-semibold mb-2">Scores by Subject</p>
+      <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow">
+        <p className="font-semibold mb-2 text-[#424874]">Scores by Subject</p>
         <ProgressChart subjects={subjectsForChart} scores={scores} />
         <div className="mt-3 space-y-2">
-          <p className="text-sm text-slate-600">Subject-wise mock tests</p>
+          <p className="text-sm text-[#A6B1E1]">Subject-wise mock tests</p>
           <div className="flex flex-wrap gap-2">
-            {subjectsLoading && <span className="text-xs">Loading...</span>}
+            {subjectsLoading && (
+              <span className="text-xs text-[#A6B1E1]">Loading...</span>
+            )}
             {subjectsError && (
               <span className="text-xs text-red-600">
                 Failed to load subjects
               </span>
             )}
             {!subjectsLoading && subjects.length === 0 && (
-              <span className="text-xs text-slate-500">No subjects found.</span>
+              <span className="text-xs text-[#A6B1E1]">No subjects found.</span>
             )}
             {subjects.map((s) => (
               <Link
                 key={s}
                 href={`/test?subject=${encodeURIComponent(s)}`}
-                className="text-xs border border-slate-300 px-2 py-1 rounded hover:border-slate-500"
+                className="text-xs border border-[#A6B1E1] text-[#424874] px-2 py-1 rounded hover:bg-[#DCD6F7] transition"
               >
                 {s}
               </Link>

@@ -20,17 +20,23 @@ export default async function TestPage({
   const mode = resolvedParams?.mode || "practice"; // 'practice' | 'daily10' | 'daily100'
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F4EEFF]">
       <NavBar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4 sm:space-y-5">
         {mode === "practice" && (
-          <h1 className="text-xl sm:text-2xl font-semibold">Practice Test</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-[#424874]">
+            Practice Test
+          </h1>
         )}
         {mode === "daily10" && (
-          <h1 className="text-xl sm:text-2xl font-semibold">Daily 10-Question Test</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-[#424874]">
+            Daily 10-Question Test
+          </h1>
         )}
         {mode === "daily100" && (
-          <h1 className="text-xl sm:text-2xl font-semibold">Daily 100-Question Test</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-[#424874]">
+            Daily 100-Question Test
+          </h1>
         )}
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)] gap-4 lg:gap-6 items-start">

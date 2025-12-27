@@ -3,37 +3,39 @@ import NavBar from "@/components/layout/NavBar";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F4EEFF]">
       <NavBar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 grid gap-8 lg:gap-10">
         <section className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
           <div className="space-y-4">
-            <p className="text-sm uppercase tracking-wide text-slate-500">
+            <p className="text-sm uppercase tracking-wide text-[#A6B1E1]">
               NEC License Prep
             </p>
-            <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900">
+            <h1 className="text-3xl sm:text-4xl font-semibold text-[#424874]">
               Practice, track, and master exam readiness.
             </h1>
-            <p className="text-slate-600 text-base sm:text-lg">
+            <p className="text-[#424874]/70 text-base sm:text-lg">
               Timed MCQs, detailed history, and admin-driven question uploads
               keep your prep aligned and current.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/dashboard"
-                className="border border-slate-900 text-slate-900 px-5 py-3 rounded"
+                className="border-2 border-[#424874] text-[#424874] px-5 py-3 rounded hover:bg-[#424874] hover:text-white transition"
               >
                 Dashboard
               </Link>
             </div>
           </div>
-          <div className="border rounded-lg bg-white shadow p-6 space-y-3">
+          <div className="border border-[#DCD6F7] rounded-lg bg-white shadow p-6 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-500">Sample Question</p>
-                <p className="font-semibold">What is the derivative of x^2?</p>
+                <p className="text-sm text-[#A6B1E1]">Sample Question</p>
+                <p className="font-semibold text-[#424874]">
+                  What is the derivative of x^2?
+                </p>
               </div>
-              <span className="text-xs px-2 py-1 bg-slate-900 text-white rounded">
+              <span className="text-xs px-2 py-1 bg-[#424874] text-white rounded">
                 With explanation
               </span>
             </div>
@@ -41,7 +43,7 @@ export default function Home() {
               {["x", "2x", "x^2", "2"].map((o) => (
                 <li
                   key={o}
-                  className="border rounded px-3 py-2 flex justify-between"
+                  className="border border-[#DCD6F7] rounded px-3 py-2 flex justify-between text-[#424874]"
                 >
                   <span>{o}</span>
                   {o === "2x" && (
@@ -50,7 +52,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#A6B1E1]">
               Upload JSON to add subjects, attach explanations, and deploy new
               question sets instantly.
             </p>

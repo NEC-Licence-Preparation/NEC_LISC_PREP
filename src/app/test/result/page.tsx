@@ -17,11 +17,13 @@ export default async function ResultPage({
   if (!attemptId) redirect("/test");
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F4EEFF]">
       <NavBar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-        <h1 className="text-xl sm:text-2xl font-semibold">Test Result</h1>
-        <div className="bg-white border rounded p-4 shadow">
+        <h1 className="text-xl sm:text-2xl font-semibold text-[#424874]">
+          Test Result
+        </h1>
+        <div className="bg-white border border-[#DCD6F7] rounded p-4 shadow">
           <TestResult attemptId={attemptId} />
         </div>
       </main>

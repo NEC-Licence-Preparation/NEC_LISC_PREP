@@ -66,30 +66,30 @@ export default function QuestionManager() {
 
   return (
     <div className="grid gap-4">
-      <div className="border rounded p-4 bg-white shadow space-y-3">
-        <p className="font-semibold">Add Question</p>
+      <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow space-y-3">
+        <p className="font-semibold text-[#424874]">Add Question</p>
         <input
-          className="w-full border rounded px-3 py-2"
+          className="w-full border border-[#DCD6F7] rounded px-3 py-2 focus:outline-none focus:border-[#A6B1E1]"
           placeholder="Question text"
           value={form.question}
           onChange={(e) => setForm({ ...form, question: e.target.value })}
         />
         <div className="grid md:grid-cols-2 gap-2">
           <input
-            className="border rounded px-3 py-2"
+            className="border border-[#DCD6F7] rounded px-3 py-2 focus:outline-none focus:border-[#A6B1E1]"
             placeholder="Subject"
             value={form.subject}
             onChange={(e) => setForm({ ...form, subject: e.target.value })}
           />
           <input
-            className="border rounded px-3 py-2"
+            className="border border-[#DCD6F7] rounded px-3 py-2 focus:outline-none focus:border-[#A6B1E1]"
             placeholder="Faculty"
             value={form.faculty}
             onChange={(e) => setForm({ ...form, faculty: e.target.value })}
           />
         </div>
         <input
-          className="border rounded px-3 py-2"
+          className="border border-[#DCD6F7] rounded px-3 py-2 focus:outline-none focus:border-[#A6B1E1]"
           placeholder="Correct answer"
           value={form.correctAnswer}
           onChange={(e) => setForm({ ...form, correctAnswer: e.target.value })}
@@ -98,7 +98,7 @@ export default function QuestionManager() {
           {form.options.map((opt, idx) => (
             <input
               key={idx}
-              className="border rounded px-3 py-2"
+              className="border border-[#DCD6F7] rounded px-3 py-2 focus:outline-none focus:border-[#A6B1E1]"
               placeholder={`Option ${idx + 1}`}
               value={opt}
               onChange={(e) => {
@@ -110,7 +110,7 @@ export default function QuestionManager() {
           ))}
         </div>
         <textarea
-          className="border rounded px-3 py-2 w-full"
+          className="border border-[#DCD6F7] rounded px-3 py-2 w-full focus:outline-none focus:border-[#A6B1E1]"
           placeholder="Explanation (optional)"
           rows={3}
           value={form.explanation}
@@ -119,34 +119,36 @@ export default function QuestionManager() {
         {error && <p className="text-sm text-red-500">{error}</p>}
         {status && <p className="text-sm text-green-600">{status}</p>}
         <button
-          className="bg-slate-900 text-white px-4 py-2 rounded"
+          className="bg-[#424874] text-white px-4 py-2 rounded hover:bg-[#424874]/90 transition"
           onClick={onCreate}
         >
           Create
         </button>
       </div>
 
-      <div className="border rounded p-4 bg-white shadow">
-        <p className="font-semibold mb-2">Questions</p>
+      <div className="border border-[#DCD6F7] rounded p-4 bg-white shadow">
+        <p className="font-semibold mb-2 text-[#424874]">Questions</p>
         {!questions?.length && (
-          <p className="text-sm text-slate-500">No questions yet.</p>
+          <p className="text-sm text-[#A6B1E1]">No questions yet.</p>
         )}
-        <ul className="divide-y">
+        <ul className="divide-y divide-[#DCD6F7]">
           {questions?.map((q: Question) => (
             <li key={q._id} className="py-2 flex items-center justify-between">
               <div>
-                <p className="font-medium text-sm">{q.question}</p>
-                <p className="text-xs text-slate-500">
+                <p className="font-medium text-sm text-[#424874]">
+                  {q.question}
+                </p>
+                <p className="text-xs text-[#A6B1E1]">
                   {q.subject} • {q.faculty}
                 </p>
                 {q.explanation && (
-                  <p className="text-xs text-slate-600 mt-1">
+                  <p className="text-xs text-[#424874]/70 mt-1">
                     Explanation: {q.explanation}
                   </p>
                 )}
               </div>
               <button
-                className="text-sm text-red-600"
+                className="text-sm text-red-600 hover:text-red-700"
                 onClick={() => onDelete(q._id)}
               >
                 Delete
