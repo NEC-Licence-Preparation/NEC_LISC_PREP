@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 import { faculties } from "@/lib/faculties";
 
@@ -12,6 +12,7 @@ interface Props {
 
 export default function FacultyChooser({ initialFaculty }: Props) {
   const router = useRouter();
+  const { update } = useSession();
   const [faculty, setFaculty] = useState<string>(
     initialFaculty ?? faculties[0]
   );
@@ -36,8 +37,9 @@ export default function FacultyChooser({ initialFaculty }: Props) {
       return;
     }
 
-    // Faculty saved successfully - redirect to dashboard
-    // The middleware will reload the token from DB on next request
+    // Update session token so middleware sees faculty immediately
+    await update({ faculty });
+
     router.push("/");
     router.refresh();
     setLoading(false);
