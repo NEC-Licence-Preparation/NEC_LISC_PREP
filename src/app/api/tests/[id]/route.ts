@@ -3,12 +3,12 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { JWT } from "next-auth/jwt";
 import { connectDB } from "@/lib/mongodb";
-import TestAttempt from "@/models/TestAttempt";
+import TestAttempt, { type IAnswer } from "@/models/TestAttempt";
 import Question from "@/models/Question";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const token = (await getToken({
@@ -18,8 +18,7 @@ export async function GET(
     if (!token)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const resolved = await params;
-    const attemptId = resolved?.id;
+    const attemptId = params?.id;
     if (!attemptId)
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
@@ -33,10 +32,13 @@ export async function GET(
     if (!attempt)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const questionIds = attempt.answers.map((a) => a.questionId);
+    const answers: IAnswer[] = Array.isArray(attempt.answers)
+      ? (attempt.answers as IAnswer[])
+      : [];
+    const questionIds = answers.map((a: IAnswer) => a.questionId);
     const questions = await Question.find({ _id: { $in: questionIds } }).lean();
 
-    const breakdown = attempt.answers.map((a) => {
+    const breakdown = answers.map((a: IAnswer) => {
       const q = questions.find((qq) => String(qq._id) === String(a.questionId));
       return {
         questionId: String(a.questionId),
