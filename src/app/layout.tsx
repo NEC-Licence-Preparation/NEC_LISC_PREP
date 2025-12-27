@@ -30,6 +30,20 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50`}
       >
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-K1KX6N1S1X"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-K1KX6N1S1X');
+          `}
+        </Script>
+
         {/* Remove unexpected attributes introduced by browser extensions before React hydrates */}
         <Script id="sanitize-body-attrs" strategy="beforeInteractive">
           {`
