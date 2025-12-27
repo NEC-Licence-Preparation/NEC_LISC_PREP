@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export default function NavBar() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdministrator, setIsAdministrator] = useState(false);
 
   const isAdmin = session?.role === "admin";
   const userName = session?.user?.name || "User";
@@ -14,6 +15,27 @@ export default function NavBar() {
     () => (userName ? userName.charAt(0).toUpperCase() : "U"),
     [userName]
   );
+
+  // Check if user is administrator
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!session?.user?.email) {
+        setIsAdministrator(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/check');
+        const data = await res.json();
+        setIsAdministrator(data.isAdmin);
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdministrator(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [session?.user?.email]);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-[#A6B1E1]/30 bg-primary text-white backdrop-blur-sm shadow-lg">
@@ -116,7 +138,23 @@ export default function NavBar() {
                     >
                       Admin
                     </Link>
-                  )}{" "}
+                  )}
+                  {isAdministrator && (
+                    <Link
+                      href="/administrator"
+                      className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Administrator
+                    </Link>
+                  )}
+                  <Link
+                    href="/my-tickets"
+                    className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Tickets
+                  </Link>
                   <Link
                     href="/profile"
                     className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10 md:px-2 md:py-1"

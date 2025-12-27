@@ -42,9 +42,14 @@ export default async function AdminPage() {
               Manage questions and users.
             </p>
           </div>
-          <Link href="/" className="underline text-[#424874]">
-            Home
-          </Link>
+          <div className="flex gap-4">
+            <Link href="/admin_tickets" className="underline text-primary">
+              Support Tickets
+            </Link>
+            <Link href="/" className="underline text-primary">
+              Home
+            </Link>
+          </div>
         </div>
         <JsonUploader />
         <QuestionManager />

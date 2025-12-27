@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import SupportChatBubble from "@/components/SupportChatBubble";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,7 +62,10 @@ export default function RootLayout({
             }
           `}
         </Script>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <SupportChatBubble />
+        </Providers>
       </body>
     </html>
   );
